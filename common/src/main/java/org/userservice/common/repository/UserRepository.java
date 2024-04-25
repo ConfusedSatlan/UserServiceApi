@@ -8,7 +8,7 @@ import org.userservice.common.model.entity.User;
 
 @Component
 public class UserRepository {
-    private static final Long FIRST_ID = 1l;
+    private static final Long FIRST_ID = 1L;
     private static final String INVALID_ID = "Id can't be negative";
     private final List<User> userTable = new LinkedList<>();
     private Long lastUserID = FIRST_ID;
