@@ -15,4 +15,4 @@ jobs:
           distribution: 'adopt'
           cache: maven
       - name: Build with Maven
-        run: cd common mvn --batch-mode --update-snapshots verify
+        run: cd common && mvn --batch-mode --update-snapshots verify
