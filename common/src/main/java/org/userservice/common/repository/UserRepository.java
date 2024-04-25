@@ -8,8 +8,10 @@ import org.userservice.common.model.entity.User;
 
 @Component
 public class UserRepository {
+    private static final Long FIRST_ID = 1l;
+    private static final String INVALID_ID = "Id can't be negative";
     private final List<User> userTable = new LinkedList<>();
-    private Long lastUserID = 1L;
+    private Long lastUserID = FIRST_ID;
 
     public User addUser(User user) {
         user.setId(lastUserID);
@@ -24,7 +26,7 @@ public class UserRepository {
             return null;
         }
         if (id < 1) {
-            throw new IllegalArgumentException("Invalid user ID");
+            throw new IllegalArgumentException(INVALID_ID);
         }
         return userTable.get(index);
     }
@@ -40,7 +42,7 @@ public class UserRepository {
             return false;
         }
         if (id < 1) {
-            throw new IllegalArgumentException("Invalid user ID");
+            throw new IllegalArgumentException(INVALID_ID);
         }
         int index = id.intValue() - 1;
         User user = userTable.get(index);
@@ -54,7 +56,7 @@ public class UserRepository {
             return null;
         }
         if (id < 1) {
-            throw new IllegalArgumentException("Invalid user ID");
+            throw new IllegalArgumentException(INVALID_ID);
         }
         if (updatedUser.getId() == null) {
             updatedUser.setId(id);
@@ -65,6 +67,6 @@ public class UserRepository {
 
     public void clean() {
         userTable.clear();
-        lastUserID = 1L;
+        lastUserID = FIRST_ID;
     }
 }
