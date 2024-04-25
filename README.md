@@ -1,6 +1,5 @@
 # UserServiceApi
 Welcome to my test task of creating api from Clear Solutions company
-# User Service API
 
 This repository contains a Spring Boot application for managing user data through a RESTful API.
 
