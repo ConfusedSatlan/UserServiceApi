@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BirthValidation {
-    String message() default "User must be at least 18 years old to register.";
+    String message() default "Invalid Age";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
