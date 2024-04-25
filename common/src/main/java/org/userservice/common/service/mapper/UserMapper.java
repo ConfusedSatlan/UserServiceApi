@@ -11,7 +11,5 @@ public interface UserMapper {
 
     UserDto mapToDto(User user);
 
-    User mapToModel(UserDto userDto);
-
     User mapToModel(CreateRequestUserDto userDto);
 }

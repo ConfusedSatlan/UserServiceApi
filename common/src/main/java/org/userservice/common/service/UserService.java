@@ -4,7 +4,6 @@ import org.userservice.common.model.dto.CreateRequestUserDto;
 import org.userservice.common.model.dto.UserDto;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface UserService {
@@ -13,8 +12,6 @@ public interface UserService {
     UserDto getUserById(Long userId);
 
     UserDto updateUser(Long userId, UserDto userDto);
-
-    UserDto updateAllUserFields(Long userId, CreateRequestUserDto userDto);
 
     boolean deleteUser(Long userId);
 

@@ -108,27 +108,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateAllUserFields_ValidData_ReturnsUpdatedUser() {
-        UserDto updatedUserDto = new UserDto();
-        when(userRepository.getUser(USER_ID)).thenReturn(createdUser);
-        when(userRepository.updateUser(USER_ID, createdUser)).thenReturn(createdUser);
-        when(userMapper.mapToDto(createdUser)).thenReturn(updatedUserDto);
-        when(userMapper.mapToModel(requestUserDto)).thenReturn(createdUser);
-
-        UserDto result = userService.updateAllUserFields(USER_ID, requestUserDto);
-
-        assertNotNull(result);
-        assertEquals(updatedUserDto, result);
-    }
-
-    @Test
-    void updateAllUserFields_InvalidId_ThrowsException() {
-        when(userRepository.getUser(USER_ID)).thenReturn(null);
-
-        assertThrows(UserServiceApiException.class, () -> userService.updateAllUserFields(USER_ID, requestUserDto));
-    }
-
-    @Test
     void deleteUser_ValidId_ReturnsTrue() {
         when(userRepository.deleteUser(USER_ID)).thenReturn(true);
 

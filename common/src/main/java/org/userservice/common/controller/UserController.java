@@ -1,18 +1,14 @@
 package org.userservice.common.controller;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -79,22 +75,6 @@ public class UserController {
             @Valid @RequestBody UserDto userDto
     ) {
         UserDto updatedUser = userService.updateUser(userId, userDto);
-        return ResponseEntity.ok(updatedUser);
-    }
-
-    @Operation(summary = "Update all fields of a user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User fields successfully updated"),
-            @ApiResponse(responseCode = "404", description = "User not found",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class),
-                            examples = @ExampleObject(value = "User not found with the specified ID"))
-            )
-    })
-    @PutMapping("/{userId}/update-all")
-    public ResponseEntity<?> updateAllUserFields(@PathVariable Long userId,
-                                                 @RequestBody CreateRequestUserDto user) {
-        UserDto updatedUser = userService.updateAllUserFields(userId, user);
         return ResponseEntity.ok(updatedUser);
     }
 

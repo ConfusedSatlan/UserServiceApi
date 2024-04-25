@@ -12,7 +12,6 @@ import org.userservice.common.service.UserService;
 import org.userservice.common.service.mapper.UserMapper;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +48,35 @@ public class UserServiceImpl implements UserService {
                     String.valueOf(HttpStatus.BAD_REQUEST));
         }
 
+        updateFieldsOfUser(existingUser, userDto);
+
+        existingUser = userRepository.updateUser(userId, existingUser);
+
+        return userMapper.mapToDto(existingUser);
+    }
+
+    @Override
+    public boolean deleteUser(Long userId) {
+        return userRepository.deleteUser(userId);
+    }
+
+    @Override
+    public List<UserDto> searchUsersByBirthDateRange(LocalDate fromDate, LocalDate toDate) {
+        List<User> allUsers = userRepository.getAllUsers();
+
+        List<User> filteredUsers = allUsers.stream()
+                .filter(user -> user.getBirthDate()
+                            .isAfter(fromDate.minusDays(1))
+                        && user.getBirthDate().isBefore(toDate.plusDays(1)))
+                .toList();
+
+        return filteredUsers.stream()
+                .map(userMapper::mapToDto)
+                .collect(Collectors.toList());
+
+    }
+
+    private void updateFieldsOfUser(User existingUser, UserDto userDto) {
         String email = userDto.getEmail();
         if (email != null && !email.isEmpty()) {
             existingUser.setEmail(email);
@@ -78,44 +106,5 @@ public class UserServiceImpl implements UserService {
         if (phoneNumber != null && !phoneNumber.isEmpty()) {
             existingUser.setPhoneNumber(phoneNumber);
         }
-
-        existingUser = userRepository.updateUser(userId, existingUser);
-
-        return userMapper.mapToDto(existingUser);
-    }
-
-    @Override
-    public UserDto updateAllUserFields(Long userId, CreateRequestUserDto userDto) {
-        if (userId < 1) {
-            throw new UserServiceApiException("ID cannot be less than 1", String.valueOf(HttpStatus.BAD_REQUEST.value()));
-        }
-        User existingUser = userRepository.getUser(userId);
-        if (existingUser == null) {
-            throw new UserServiceApiException("User with id: " + userId + " not found",
-                    String.valueOf(HttpStatus.BAD_REQUEST));
-        }
-        User user = userMapper.mapToModel(userDto);
-        return userMapper.mapToDto(userRepository.updateUser(userId, user));
-    }
-
-    @Override
-    public boolean deleteUser(Long userId) {
-        return userRepository.deleteUser(userId);
-    }
-
-    @Override
-    public List<UserDto> searchUsersByBirthDateRange(LocalDate fromDate, LocalDate toDate) {
-        List<User> allUsers = userRepository.getAllUsers();
-
-        List<User> filteredUsers = allUsers.stream()
-                .filter(user -> user.getBirthDate()
-                            .isAfter(fromDate.minusDays(1))
-                        && user.getBirthDate().isBefore(toDate.plusDays(1)))
-                .toList();
-
-        return filteredUsers.stream()
-                .map(userMapper::mapToDto)
-                .collect(Collectors.toList());
-
     }
 }

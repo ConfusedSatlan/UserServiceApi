@@ -145,19 +145,6 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateAllUserFields_ReturnsUpdatedUser() throws Exception {
-        when(userService.updateAllUserFields(any(), any())).thenReturn(updatedUserDto);
-        String jsonRequest = objectMapper.writeValueAsString(updatedAllUserDto);
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/v1/users/{userId}/update-all", USER_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
-                .andExpect(status().isOk())
-                .andReturn();
-        UserDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), UserDto.class);
-        assertEquals(updatedUserDto, actual);
-    }
-
-    @Test
     void deleteUser_ReturnsSuccessMessage() throws Exception {
         when(userService.deleteUser(any())).thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders.delete("/v1/users/{userId}", USER_ID))
