@@ -24,6 +24,27 @@ import java.util.List;
 @RestControllerAdvice
 public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler(value = {Exception.class})
+    protected ResponseEntity<ResponseErrorDto> handleNotFound(Exception ex) {
+        ResponseErrorDto body = ResponseErrorDto.builder()
+                .time(LocalDateTime.now())
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.name())
+                .errorMessage(List.of(ex.getMessage()))
+                .build();
+        return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(body);
+    }
+
+    @ExceptionHandler(value = {NullPointerException.class})
+    protected ResponseEntity<ResponseErrorDto> handleNullPointerException(NullPointerException ex) {
+        ResponseErrorDto body = ResponseErrorDto.builder()
+                .time(LocalDateTime.now())
+                .statusCode(HttpStatus.NOT_FOUND.name())
+                .errorMessage(List.of(ex.getMessage()))
+                .stackTrace(List.of(Arrays.toString(ex.getStackTrace())))
+                .build();
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(body);
+    }
+
     @ExceptionHandler(value = {UserServiceApiException.class})
     protected ResponseEntity<ResponseErrorDto> handleUserServiceApiException(UserServiceApiException ex) {
 
