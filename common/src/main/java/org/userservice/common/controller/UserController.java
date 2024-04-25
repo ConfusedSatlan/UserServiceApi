@@ -89,8 +89,8 @@ public class UserController {
     })
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
-        boolean deleted = userService.deleteUser(userId);
-        return ResponseEntity.ok("User successfully deleted");
+        userService.deleteUser(userId);
+        return ResponseEntity.ok("User with ID " + userId + " has been deleted successfully.");
     }
 
     @Operation(summary = "Search users by birth date range")
