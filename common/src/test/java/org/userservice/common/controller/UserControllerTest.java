@@ -25,8 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,53 +52,12 @@ public class UserControllerTest {
 
     @BeforeAll
     static void setUp(@Autowired WebApplicationContext applicationContext) {
-
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(applicationContext)
-                .build();
-
-        testUserDto = new CreateRequestUserDto(
-                "test@example.com",
-                "John",
-                "Doe",
-                LocalDate.of(1990, 1, 1),
-                "123 Main St",
-                "1234567890"
-        );
-
-        createdUserDto = UserDto.builder()
-                .id(USER_ID)
-                .email("test@example.com")
-                .firstName("John")
-                .lastName("Doe")
-                .birthDate(LocalDate.of(1990, 1, 1))
-                .address("123 Main St")
-                .phoneNumber("1234567890")
-                .build();
-
-        updateUserDto = UserDto.builder()
-                .email("newEmail@example.com")
-                .firstName("Niki")
-                .build();
-
-        updatedUserDto = UserDto.builder()
-                .id(USER_ID)
-                .email("newEmail@example.com")
-                .firstName("Niki")
-                .lastName("Doe")
-                .birthDate(LocalDate.of(1990, 1, 1))
-                .address("123 Main St")
-                .phoneNumber("1234567890")
-                .build();
-
-        updatedAllUserDto = new CreateRequestUserDto(
-                "newEmail@example.com",
-                "Niki",
-                "Doe",
-                LocalDate.of(1990, 1, 1),
-                "123 Main St",
-                "1234567890"
-        );
+        mockMvc = createMockMvc(applicationContext);
+        testUserDto = createTestUserDto();
+        createdUserDto = createCreatedUserDto();
+        updateUserDto = createUpdateUserDto();
+        updatedUserDto = createUpdatedUserDto();
+        updatedAllUserDto = createUpdatedAllUserDto();
     }
 
     @Test
@@ -132,10 +90,23 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateUser_ReturnsUpdatedUser() throws Exception {
+    void updateAllFieldsUser_ReturnsUpdatedUser() throws Exception {
+        when(userService.updateAllUser(any(), any())).thenReturn(updatedUserDto);
+        String jsonRequest = objectMapper.writeValueAsString(updatedAllUserDto);
+        MvcResult result = mockMvc.perform(put("/v1/users/{userId}", USER_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isOk())
+                .andReturn();
+        UserDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), UserDto.class);
+        assertEquals(updatedUserDto, actual);
+    }
+
+    @Test
+    void updateSomeFieldsUser_ReturnsUpdatedUser() throws Exception {
         when(userService.updateUser(any(), any())).thenReturn(updatedUserDto);
         String jsonRequest = objectMapper.writeValueAsString(updateUserDto);
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/v1/users/{userId}", USER_ID)
+        MvcResult result = mockMvc.perform(patch("/v1/users/{userId}", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isOk())
@@ -149,5 +120,64 @@ public class UserControllerTest {
         when(userService.deleteUser(any())).thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders.delete("/v1/users/{userId}", USER_ID))
                 .andExpect(status().isOk());
+    }
+
+    private static CreateRequestUserDto createUpdatedAllUserDto() {
+        return new CreateRequestUserDto(
+                "newEmail@example.com",
+                "Niki",
+                "Doe",
+                LocalDate.of(1990, 1, 1),
+                "123 Main St",
+                "1234567890"
+        );
+    }
+
+    private static UserDto createUpdatedUserDto() {
+        return UserDto.builder()
+                .id(USER_ID)
+                .email("newEmail@example.com")
+                .firstName("Niki")
+                .lastName("Doe")
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .address("123 Main St")
+                .phoneNumber("1234567890")
+                .build();
+    }
+
+    private static UserDto createUpdateUserDto() {
+        return UserDto.builder()
+                .email("newEmail@example.com")
+                .firstName("Niki")
+                .build();
+    }
+
+    private static UserDto createCreatedUserDto() {
+        return UserDto.builder()
+                .id(USER_ID)
+                .email("test@example.com")
+                .firstName("John")
+                .lastName("Doe")
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .address("123 Main St")
+                .phoneNumber("1234567890")
+                .build();
+    }
+
+    private static CreateRequestUserDto createTestUserDto() {
+        return new CreateRequestUserDto(
+                "test@example.com",
+                "John",
+                "Doe",
+                LocalDate.of(1990, 1, 1),
+                "123 Main St",
+                "1234567890"
+        );
+    }
+
+    private static MockMvc createMockMvc(WebApplicationContext applicationContext) {
+        return MockMvcBuilders
+                .webAppContextSetup(applicationContext)
+                .build();
     }
 }

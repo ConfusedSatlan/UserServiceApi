@@ -3,10 +3,8 @@ package org.userservice.common.output.exception;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,7 +29,7 @@ public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.name())
                 .errorMessage(List.of(ex.getMessage()))
                 .build();
-        return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(body);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(body);
     }
 
     @ExceptionHandler(value = {NullPointerException.class})
@@ -42,7 +40,7 @@ public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
                 .errorMessage(List.of(ex.getMessage()))
                 .stackTrace(List.of(Arrays.toString(ex.getStackTrace())))
                 .build();
-        return  ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(body);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(body);
     }
 
     @ExceptionHandler(value = {UserServiceApiException.class})
@@ -54,8 +52,7 @@ public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
                 .errorMessage(List.of(ex.getMessage()))
                 .stackTrace(List.of(Arrays.toString(ex.getStackTrace())))
                 .build();
-
-           return ResponseEntity.status(HttpStatus.valueOf(Integer.valueOf(ex.getCode()))).body(body);
+           return ResponseEntity.status(Integer.valueOf(ex.getCode())).body(body);
     }
 
     @Override
@@ -74,5 +71,44 @@ public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.valueOf(errorDto.getStatusCode())).body(errorDto);
+    }
+
+    @Override
+    protected @NonNull ResponseEntity<Object> createResponseEntity(Object body, HttpHeaders headers,
+                                                                   HttpStatusCode statusCode, WebRequest request) {
+        if (body instanceof ResponseErrorDto error) {
+            ResponseEntity<Object> responseWithExceptionDetails = buildResponseEntity(error);
+            log.debug("[EXCEPTION]: create response with exception details: {}", responseWithExceptionDetails.getBody());
+            return responseWithExceptionDetails;
+
+        } else if (body instanceof ProblemDetail problem) {
+            if (problem.getStatus() == 0) {
+                problem.setStatus(statusCode.value());
+            }
+            ResponseEntity<Object> responseWithExceptionDetails = buildResponseEntity(problem);
+            log.debug("[EXCEPTION]: create response with exception details: {}", responseWithExceptionDetails.getBody());
+            return responseWithExceptionDetails;
+        }
+
+        return super.createResponseEntity(body, headers, statusCode, request);
+    }
+
+    private ResponseEntity<Object> buildResponseEntity(ResponseErrorDto responseErrorDto) {
+        HttpStatus status = HttpStatus.valueOf(responseErrorDto.getStatusCode());
+
+        return ResponseEntity.status(status).body(responseErrorDto);
+    }
+
+    private ResponseEntity<Object> buildResponseEntity(ProblemDetail problemDetail) {
+        ResponseErrorDto responseErrorDto = new ResponseErrorDto();
+        HttpStatus status = HttpStatus.resolve(problemDetail.getStatus());
+
+        responseErrorDto.setTime(LocalDateTime.now());
+        responseErrorDto.setStatusCode(status.name());
+        if (problemDetail.getDetail() != null) {
+            responseErrorDto.setErrorMessage(List.of(problemDetail.getDetail()));
+        }
+
+        return ResponseEntity.status(status).body(responseErrorDto);
     }
 }

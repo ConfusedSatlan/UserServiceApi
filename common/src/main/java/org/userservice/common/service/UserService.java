@@ -13,6 +13,8 @@ public interface UserService {
 
     UserDto updateUser(Long userId, UserDto userDto);
 
+    UserDto updateAllUser(Long userId, CreateRequestUserDto userDto);
+
     boolean deleteUser(Long userId);
 
     List<UserDto> searchUsersByBirthDateRange(LocalDate fromDate, LocalDate toDate);

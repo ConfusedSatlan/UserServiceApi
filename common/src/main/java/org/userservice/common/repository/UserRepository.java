@@ -1,10 +1,11 @@
 package org.userservice.common.repository;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 import org.userservice.common.model.entity.User;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class UserRepository {
@@ -18,6 +19,12 @@ public class UserRepository {
         userTable.add(user);
         lastUserID++;
         return user;
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return getAllUsers().stream()
+                .filter(user -> user.getEmail().equals(email))
+                .findFirst();
     }
 
     public User getUser(Long id) {

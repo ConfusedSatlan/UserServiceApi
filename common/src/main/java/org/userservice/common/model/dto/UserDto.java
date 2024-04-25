@@ -5,7 +5,11 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.userservice.common.validation.BirthValidation;
 import org.userservice.common.validation.EmailValidation;

@@ -12,6 +12,8 @@ You can access the API using the following base URL:
 
 [Base URL: http://localhost:8080/api/**](http://localhost:8080/api/v1/users)
 
+[SwaggerApi URL: http://localhost:8080/api/swagger-ui/index.html](http://localhost:8080/api/swagger-ui/index.html#/)
+
 Below are the available endpoints:
 
 - **Create User**: `POST /v1/users`
@@ -63,83 +65,93 @@ This repository contains a Spring Boot application for managing user data throug
 - **Method**: POST
 - **Endpoint**: `/v1/users`
 - **Request Body**:
-  ```json
-  {
-    "email": "example@example.com",
-    "firstName": "John",
-    "lastName": "Doe",
-    "birthDate": "2000-01-01",
-    "address": "123 Main Street",
-    "phoneNumber": "1234567890"
-  }
-  ```
- - **Response Body**:
+  - CreateRequestUserDto.java
     ```json
-      {
-        "email": "example@example.com",
-        "firstName": "John",
-        "lastName": "Doe",
-        "birthDate": "2000-01-01",
-        "address": "123 Main Street",
-        "phoneNumber": "1234567890"
-      }
-     ```
+    {
+      "email": "example@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "birthDate": "2000-01-01",
+      "address": "123 Main Street",
+      "phoneNumber": "1234567890"
+    }
+    ```
+ - **Response Body**:
+   - UserDto.java
+      ```json
+        {
+          "id" : "1",
+          "email": "example@example.com",
+          "firstName": "John",
+          "lastName": "Doe",
+          "birthDate": "2000-01-01",
+          "address": "123 Main Street",
+          "phoneNumber": "1234567890"
+        }
+       ```
 ### Update User
 
-- **Method**: PUT
+- **Method**: PATCH
 - **Endpoint**: `/v1/users/{userId}`
 - **Request Body**:
-  ```json
-    {
-      "address": "456 Elm Street"
-    }
-   ```
+  - UserDto.java
+    ```json
+      {
+        "address": "456 Elm Street"
+      }
+     ```
 - **Response Body**:
-  ```json
-    {
-    "email": "example@example.com",
-    "firstName": "John",
-    "lastName": "Doe",
-    "birthDate": "2000-01-01",
-    "address": "456 Elm Street",
-    "phoneNumber": "1234567890"
-    }
-   ```
+  - UserDto.java
+    ```json
+      {
+      "id" : "1",
+      "email": "example@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "birthDate": "2000-01-01",
+      "address": "456 Elm Street",
+      "phoneNumber": "1234567890"
+      }
+     ```
 ### Update All User Fields
 
 - **Method**: PUT
 - **Endpoint**: `/v1/users/{userId}`
 - **Request Body**: Must contain all fields
-  ```json
-  {
+  - CreateRequestUserDto.java
+    ```json
+    {
+      "email": "updated@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "birthDate": "2000-01-01",
+      "address": "456 Elm Street",
+      "phoneNumber": "1234567890"
+    }
+     ```
+- **Response Body**:
+  - UserDto.java
+    ```json
+    {
+    "id" : "1",
     "email": "updated@example.com",
     "firstName": "John",
     "lastName": "Doe",
     "birthDate": "2000-01-01",
     "address": "456 Elm Street",
     "phoneNumber": "1234567890"
-  }
-   ```
-- **Response Body**:
-  ```json
-  {
-  "email": "updated@example.com",
-  "firstName": "John",
-  "lastName": "Doe",
-  "birthDate": "2000-01-01",
-  "address": "456 Elm Street",
-  "phoneNumber": "1234567890"
-  }  
-  ```
+    }  
+    ```
 
 ### Delete User
 
 - **Method**: DELETE
 - **Endpoint**: `/v1/users/{userId}`
 - **Response**: 
-    ```json
-        "User with ID {userId} has been deleted successfully."
-     ```
+  - message: String
+      ```json
+          "User with ID {userId} has been deleted successfully."
+       ```
 ### Search Users by Birth Date Range
 
 - **Method**: GET
@@ -149,26 +161,29 @@ This repository contains a Spring Boot application for managing user data throug
 - `toDate`: End date of the birth date range (format: YYYY-MM-DD)
 
 - **Response**: 
-    ```json
-        [
-          {
-            "email": "example1@example.com",
-            "firstName": "Alice",
-            "lastName": "Smith",
-            "birthDate": "1990-05-15",
-            "address": "789 Maple Avenue",
-            "phoneNumber": "9876543210"
-          },
-          {
-            "email": "example2@example.com",
-            "firstName": "Bob",
-            "lastName": "Johnson",
-            "birthDate": "1995-10-20",
-            "address": null,
-            "phoneNumber": null
-          }
-        ]
-     ```
+  - List of UserDto.java
+      ```json
+          [
+            {
+              "id" : "1",
+              "email": "example1@example.com",
+              "firstName": "Alice",
+              "lastName": "Smith",
+              "birthDate": "1990-05-15",
+              "address": "789 Maple Avenue",
+              "phoneNumber": "9876543210"
+            },
+            {
+              "id" : "2",
+              "email": "example2@example.com",
+              "firstName": "Bob",
+              "lastName": "Johnson",
+              "birthDate": "1995-10-20",
+              "address": null,
+              "phoneNumber": null
+            }
+          ]
+       ```
 ### 3. Testing
 Unit tests can be executed using Maven:
 ```bash

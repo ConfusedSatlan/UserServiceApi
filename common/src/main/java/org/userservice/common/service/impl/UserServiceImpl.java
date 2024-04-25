@@ -13,6 +13,7 @@ import org.userservice.common.service.mapper.UserMapper;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +24,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(CreateRequestUserDto userDto) {
+        Optional<User> findByEmail = userRepository.findByEmail(userDto.email());
+        if (findByEmail.isPresent()) {
+            throw new UserServiceApiException("User with email: " + userDto.email() + " already exist",
+                    String.valueOf(HttpStatus.BAD_REQUEST.value()));
+        }
         User newUser = userRepository.addUser(userMapper.mapToModel(userDto));
         return userMapper.mapToDto(newUser);
     }
@@ -39,20 +45,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) {
-        if (userId < 1) {
-            throw new UserServiceApiException("ID cannot be less than 1", String.valueOf(HttpStatus.BAD_REQUEST.value()));
+        User existingUser =  trustUser(userId, userDto.getEmail());
+        updateFieldsOfUser(existingUser, userDto);
+        existingUser = userRepository.updateUser(userId, existingUser);
+        return userMapper.mapToDto(existingUser);
+    }
+
+    private User trustUser(Long userId, String email) {
+        Optional<User> findByEmail = userRepository.findByEmail(email);
+        if (findByEmail.isPresent() && findByEmail.get().getId() != userId) {
+            throw new UserServiceApiException("User with email: " + email + " already exist",
+                    String.valueOf(HttpStatus.BAD_REQUEST.value()));
         }
         User existingUser = userRepository.getUser(userId);
         if (existingUser == null) {
             throw new UserServiceApiException("User with id: " + userId + " not found",
-                    String.valueOf(HttpStatus.BAD_REQUEST));
+                    String.valueOf(HttpStatus.BAD_REQUEST.value()));
         }
+        return existingUser;
+    }
 
-        updateFieldsOfUser(existingUser, userDto);
-
-        existingUser = userRepository.updateUser(userId, existingUser);
-
-        return userMapper.mapToDto(existingUser);
+    @Override
+    public UserDto updateAllUser(Long userId, CreateRequestUserDto userDto) {
+        trustUser(userId, userDto.email());
+        User user = userMapper.mapToModel(userDto);
+        userRepository.updateUser(userId, user);
+        return userMapper.mapToDto(user);
     }
 
     @Override
