@@ -47,7 +47,7 @@ This repository contains a Spring Boot application for managing user data throug
 
 6. **Database**: Data persistence layer is not required.
 
-## Model
+## 1. Model
 - **DTO**
   - input: CreateRequestUserDto.java
   - output: ResponseErrorDto.java
@@ -57,7 +57,7 @@ This repository contains a Spring Boot application for managing user data throug
   - User.java
 
 
-## API Endpoints (Functionality)
+## 2. API Endpoints (Functionality)
 
 ### Create User
 - **Method**: POST
