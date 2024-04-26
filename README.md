@@ -17,7 +17,7 @@ You can access the API using the following base URL:
 Below are the available endpoints:
 
 - **Create User**: `POST /v1/users`
-- **Update User**: `PUT /v1/users/{userId}`
+- **Update User**: `PATCH /v1/users/{userId}`
 - **Update All User Fields**: `PUT /v1/users/{userId}`
 - **Delete User**: `DELETE /v1/users/{userId}`
 - **Search Users by Birth Date Range**: `GET /v1/users/search?fromDate={startDate}&toDate={endDate}`
