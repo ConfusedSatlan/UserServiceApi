@@ -36,11 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = userRepository.getUser(userId);
-        if (user == null) {
-            throw new UserServiceApiException("User with id: " + userId + " not found",
-                    String.valueOf(HttpStatus.BAD_REQUEST.value()));
-        }
+        User user = trustUser(userId, null);
         return userMapper.mapToDto(user);
     }
 
@@ -117,12 +113,14 @@ public class UserServiceImpl implements UserService {
         User existingUser = userRepository.getUser(userId);
         if (existingUser == null) {
             throw new UserServiceApiException("User with id: " + userId + " not found",
-                    String.valueOf(HttpStatus.BAD_REQUEST.value()));
+                    String.valueOf(HttpStatus.NOT_FOUND.value()));
         }
-        Optional<User> findByEmail = userRepository.findByEmail(email);
-        if (findByEmail.isPresent() && findByEmail.get().getId() != userId) {
-            throw new UserServiceApiException("User with email: " + email + " already exist",
-                    String.valueOf(HttpStatus.BAD_REQUEST.value()));
+        if (email != null) {
+            Optional<User> findByEmail = userRepository.findByEmail(email);
+            if (findByEmail.isPresent() && findByEmail.get().getId() != userId) {
+                throw new UserServiceApiException("User with email: " + email + " already exist",
+                        String.valueOf(HttpStatus.BAD_REQUEST.value()));
+            }
         }
         return existingUser;
     }

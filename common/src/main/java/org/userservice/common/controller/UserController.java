@@ -15,8 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.userservice.common.model.dto.CreateRequestUserDto;
-import org.userservice.common.model.dto.UserDto;
+import org.userservice.common.model.dto.*;
 import org.userservice.common.service.UserService;
 
 @RestController
@@ -27,7 +26,15 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "Create a user")
-    @ApiResponse(responseCode = "201", description = "User successfully created")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User successfully created",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserDto.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Bad request",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseErrorDto.class))
+    )})
     @PostMapping
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateRequestUserDto user) {
         UserDto createdUser = userService.createUser(user);
@@ -54,7 +61,10 @@ public class UserController {
 
     @Operation(summary = "Update all fields of user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User successfully updated"),
+            @ApiResponse(responseCode = "200", description = "User successfully updated",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserDto.class))
+            ),
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = String.class),
