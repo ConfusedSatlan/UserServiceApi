@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private static final int INTEGER_1 = 1;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -50,21 +51,7 @@ public class UserServiceImpl implements UserService {
         existingUser = userRepository.updateUser(userId, existingUser);
         return userMapper.mapToDto(existingUser);
     }
-
-    private User trustUser(Long userId, String email) {
-        Optional<User> findByEmail = userRepository.findByEmail(email);
-        if (findByEmail.isPresent() && findByEmail.get().getId() != userId) {
-            throw new UserServiceApiException("User with email: " + email + " already exist",
-                    String.valueOf(HttpStatus.BAD_REQUEST.value()));
-        }
-        User existingUser = userRepository.getUser(userId);
-        if (existingUser == null) {
-            throw new UserServiceApiException("User with id: " + userId + " not found",
-                    String.valueOf(HttpStatus.BAD_REQUEST.value()));
-        }
-        return existingUser;
-    }
-
+    
     @Override
     public UserDto updateAllUser(Long userId, CreateRequestUserDto userDto) {
         trustUser(userId, userDto.email());
@@ -84,8 +71,8 @@ public class UserServiceImpl implements UserService {
 
         List<User> filteredUsers = allUsers.stream()
                 .filter(user -> user.getBirthDate()
-                            .isAfter(fromDate.minusDays(1))
-                        && user.getBirthDate().isBefore(toDate.plusDays(1)))
+                            .isAfter(fromDate.minusDays(INTEGER_1))
+                        && user.getBirthDate().isBefore(toDate.plusDays(INTEGER_1)))
                 .toList();
 
         return filteredUsers.stream()
@@ -124,5 +111,19 @@ public class UserServiceImpl implements UserService {
         if (phoneNumber != null && !phoneNumber.isEmpty()) {
             existingUser.setPhoneNumber(phoneNumber);
         }
+    }
+
+    private User trustUser(Long userId, String email) {
+        User existingUser = userRepository.getUser(userId);
+        if (existingUser == null) {
+            throw new UserServiceApiException("User with id: " + userId + " not found",
+                    String.valueOf(HttpStatus.BAD_REQUEST.value()));
+        }
+        Optional<User> findByEmail = userRepository.findByEmail(email);
+        if (findByEmail.isPresent() && findByEmail.get().getId() != userId) {
+            throw new UserServiceApiException("User with email: " + email + " already exist",
+                    String.valueOf(HttpStatus.BAD_REQUEST.value()));
+        }
+        return existingUser;
     }
 }
