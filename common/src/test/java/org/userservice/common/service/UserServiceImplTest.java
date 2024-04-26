@@ -1,11 +1,13 @@
 package org.userservice.common.service;
 
+import org.junit.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.*;
 import org.userservice.common.model.dto.CreateRequestUserDto;
 import org.userservice.common.model.dto.UserDto;
 import org.userservice.common.model.entity.User;
@@ -119,12 +121,15 @@ class UserServiceImplTest {
     }
 
     @Test
-    void deleteUser_InvalidId_ReturnsFalse() {
-        when(userRepository.deleteUser(USER_ID)).thenReturn(false);
+    void deleteUser_InvalidId_ThrowsException() {
+        when(userRepository.deleteUser(USER_ID)).thenThrow(new UserServiceApiException("User doesn't exist with id: " + USER_ID,
+                String.valueOf(HttpStatus.NOT_FOUND.value())));
 
-        boolean result = userService.deleteUser(USER_ID);
-
-        assertFalse(result);
+        Exception exception = Assert.assertThrows(
+                UserServiceApiException.class,
+                () -> userService.deleteUser(USER_ID)
+        );
+        assertEquals("User doesn't exist with id: " + USER_ID, exception.getMessage());
     }
 
     @Test
