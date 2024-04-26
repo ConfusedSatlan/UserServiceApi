@@ -12,10 +12,7 @@ public class PhoneNumberValidator implements ConstraintValidator<PhoneNumberVali
     @Override
     public boolean isValid(String phoneNumber,
                            ConstraintValidatorContext constraintValidatorContext) {
-        if (phoneNumber == null) {
-            return true;
-        }
-        return Pattern.compile(PHONE_NUMBER_PATTERN)
+        return phoneNumber == null ? true : Pattern.compile(PHONE_NUMBER_PATTERN)
                 .matcher(phoneNumber).matches();
     }
 }
