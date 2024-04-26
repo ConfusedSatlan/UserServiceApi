@@ -1,13 +1,13 @@
 package org.userservice.common.service;
 
-import org.junit.*;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
 import org.userservice.common.model.dto.CreateRequestUserDto;
 import org.userservice.common.model.dto.UserDto;
 import org.userservice.common.model.entity.User;
@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -134,7 +133,6 @@ class UserServiceImplTest {
 
     @Test
     void searchUsersByBirthDateRange_ValidRange_ReturnsUsers() {
-        // Arrange
         LocalDate fromDate = LocalDate.of(1990, 1, 1);
         LocalDate toDate = LocalDate.of(2000, 1, 1);
 
@@ -148,14 +146,11 @@ class UserServiceImplTest {
         userDto1.setBirthDate(user1.getBirthDate());
         List<UserDto> expectedUserDtoList = Arrays.asList(userDto1);
 
-        // Мокируем поведение UserRepository
         when(userRepository.getAllUsers()).thenReturn(allUsers);
         when(userMapper.mapToDto(user1)).thenReturn(userDto1);
 
-        // Act
         List<UserDto> result = userService.searchUsersByBirthDateRange(fromDate, toDate);
 
-        // Assert
         assertEquals(expectedUserDtoList, result);
     }
 
