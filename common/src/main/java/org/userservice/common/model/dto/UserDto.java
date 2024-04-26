@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Past;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

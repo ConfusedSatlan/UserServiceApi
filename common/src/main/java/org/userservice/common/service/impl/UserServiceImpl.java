@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = trustUser(userId, null);
+        trustUser(userId, null)
         return userMapper.mapToDto(user);
     }
 
