@@ -110,16 +110,19 @@ public class UserServiceImpl implements UserService {
     }
 
     private User trustUser(Long userId, String email) {
-        User existingUser = userRepository.getUser(userId);
-        if (existingUser == null) {
-            throw new UserServiceApiException("User with id: " + userId + " not found",
-                    String.valueOf(HttpStatus.NOT_FOUND.value()));
-        }
-        if (email != null) {
-            Optional<User> findByEmail = userRepository.findByEmail(email);
-            if (findByEmail.isPresent() && findByEmail.get().getId() != userId) {
-                throw new UserServiceApiException("User with email: " + email + " already exist",
-                        String.valueOf(HttpStatus.BAD_REQUEST.value()));
+        User existingUser = null;
+        if (userId != null) {
+            existingUser = userRepository.getUser(userId);
+            if (existingUser == null) {
+                throw new UserServiceApiException("User with id: " + userId + " not found",
+                        String.valueOf(HttpStatus.NOT_FOUND.value()));
+            }
+            if (email != null) {
+                Optional<User> findByEmail = userRepository.findByEmail(email);
+                if (findByEmail.isPresent() && findByEmail.get().getId() != userId) {
+                    throw new UserServiceApiException("User with email: " + email + " already exist",
+                            String.valueOf(HttpStatus.BAD_REQUEST.value()));
+                }
             }
         }
         return existingUser;
