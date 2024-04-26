@@ -58,7 +58,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean deleteUser(Long userId) {
-        return userRepository.deleteUser(userId);
+        boolean isDeleted = userRepository.deleteUser(userId);
+        if (!isDeleted) {
+            throw new UserServiceApiException("User doesn't exist with id: " + userId,
+                    String.valueOf(HttpStatus.NOT_FOUND.value()));
+        }
+        return isDeleted;
     }
 
     @Override
