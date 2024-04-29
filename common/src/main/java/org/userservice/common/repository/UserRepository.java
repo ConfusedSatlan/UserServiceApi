@@ -28,12 +28,12 @@ public class UserRepository {
     }
 
     public User getUser(Long id) {
+        if (id < 1) {
+            throw new IllegalArgumentException(INVALID_ID);
+        }
         int index = id.intValue() - 1;
         if (id > lastUserID || userTable.get(index).isDeleted()) {
             return null;
-        }
-        if (id < 1) {
-            throw new IllegalArgumentException(INVALID_ID);
         }
         return userTable.get(index);
     }
@@ -45,11 +45,11 @@ public class UserRepository {
     }
 
     public boolean deleteUser(Long id) {
-        if (id > lastUserID) {
-            return false;
-        }
         if (id < 1) {
             throw new IllegalArgumentException(INVALID_ID);
+        }
+        if (id > lastUserID) {
+            return false;
         }
         int index = id.intValue() - 1;
         User user = userTable.get(index);
@@ -58,12 +58,12 @@ public class UserRepository {
     }
 
     public User updateUser(Long id, User updatedUser) {
+        if (id < 1) {
+            throw new IllegalArgumentException(INVALID_ID);
+        }
         int index = id.intValue() - 1;
         if (id > lastUserID || userTable.get(index).isDeleted()) {
             return null;
-        }
-        if (id < 1) {
-            throw new IllegalArgumentException(INVALID_ID);
         }
         if (updatedUser.getId() == null) {
             updatedUser.setId(id);
